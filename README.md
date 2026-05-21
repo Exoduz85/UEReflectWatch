@@ -74,7 +74,7 @@ The extension reads the `EngineAssociation` field from your `.uproject` file (fo
 C:\Program Files\Epic Games\UE_5.7
 ```
 
-If your engine is installed elsewhere, set the override in \*\*Tools > Options > UE Reflect Watch > Engine Path Override\*\*.
+If your engine is installed elsewhere, set the override in **Tools > Options > UE Reflect Watch > Engine Path Override**.
 
 ## Options
 
