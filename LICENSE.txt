@@ -1,0 +1,98 @@
+MIT License
+
+Copyright (c) 2025 Fredrik Wallander
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+ADDITIONAL DISCLAIMER
+
+This extension interacts with external processes including the Unreal Editor
+and the Unreal Engine build system. By installing and using this extension you
+acknowledge and agree to the following:
+
+1. USE AT YOUR OWN RISK. This extension automatically terminates the Unreal
+   Editor process and triggers project rebuilds in response to file save
+   events. Any unsaved work in the Unreal Editor at the time of a rebuild
+   cycle may be lost. You are solely responsible for saving your work before
+   any rebuild is initiated.
+
+2. NO LIABILITY FOR DATA LOSS. The author accepts no responsibility for any
+   loss of data, loss of work, corruption of project files, corruption of
+   assets, or any other damage to your Unreal Engine project or any other
+   files on your system, whether caused directly or indirectly by the use of
+   this extension.
+
+3. NO LIABILITY FOR SYSTEM DAMAGE. The author accepts no responsibility for
+   any damage to your development environment, operating system, hardware, or
+   any third-party software arising from the use of this extension.
+
+4. NO LIABILITY FOR THIRD-PARTY SOFTWARE. This extension interacts with
+   Visual Studio, Unreal Engine, and the Epic Games build system, none of
+   which are developed or maintained by the author. The author accepts no
+   responsibility for any damage, data loss, license violations, or other
+   consequences arising from the interaction between this extension and any
+   third-party software, including but not limited to Visual Studio,
+   Unreal Engine, and any plugins or tools used alongside them.
+
+5. NO WARRANTY OF COMPATIBILITY. This extension is not warranted to be
+   compatible with any specific version of Visual Studio, Unreal Engine, or
+   any other software, now or in the future. The author accepts no
+   responsibility for any breakage caused by updates to Visual Studio,
+   Unreal Engine, or any other software this extension interacts with.
+
+6. NO WARRANTY OF FITNESS. This extension is provided as a development
+   convenience tool. It is not warranted to be suitable for any particular
+   purpose, to function correctly in all environments, or to produce correct
+   build results in all cases.
+
+7. NO PROFESSIONAL OR COMMERCIAL WARRANTY. This extension is not intended
+   for use in production, commercial, or professional environments where
+   reliability is required. The author accepts no liability for any financial
+   loss, business interruption, loss of revenue, or other commercial damages
+   arising from the use of this extension in any context.
+
+8. INDEMNIFICATION. By using this extension you agree to indemnify, defend,
+   and hold harmless the author from and against any and all claims, damages,
+   losses, liabilities, costs, and expenses (including reasonable legal fees)
+   arising out of or in connection with your use of this extension or your
+   violation of these terms.
+
+9. NO WARRANTY OF SECURITY. This extension executes external processes and
+   interacts with the file system. The author makes no warranty that the
+   extension is free from security vulnerabilities and accepts no
+   responsibility for any security breach or unauthorized access resulting
+   from the use of this extension.
+
+10. VOLUNTARY USE. By using this extension you confirm that you have chosen
+    to do so voluntarily, that you have read and understood this disclaimer
+    in its entirety, and that you accept all risks associated with its use.
+
+THE AUTHOR SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, PUNITIVE, OR CONSEQUENTIAL DAMAGES OF ANY KIND ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR INABILITY TO USE THIS EXTENSION,
+EVEN IF THE AUTHOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+THIS DISCLAIMER APPLIES TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
+WHERE APPLICABLE LAW DOES NOT PERMIT THE EXCLUSION OF CERTAIN WARRANTIES OR
+THE LIMITATION OF CERTAIN LIABILITIES, THOSE EXCLUSIONS AND LIMITATIONS
+APPLY ONLY TO THE MAXIMUM EXTENT PERMITTED.
+
+If you do not agree to these terms, do not install or use this extension.
