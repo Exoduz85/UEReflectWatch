@@ -5,6 +5,12 @@ UEReflectWatch/[Bb]in/
 UEReflectWatch/[Oo]bj/
 UEReflectWatch/[Ll]og/
 UEReflectWatch/[Ll]ogs/
+UEReflectWatch.Tests/[Dd]ebug/
+UEReflectWatch.Tests/[Rr]elease/
+UEReflectWatch.Tests/[Bb]in/
+UEReflectWatch.Tests/[Oo]bj/
+UEReflectWatch.Tests/[Ll]og/
+UEReflectWatch.Tests/[Ll]ogs/
 
 ### Visual Studio ###
 .vs/

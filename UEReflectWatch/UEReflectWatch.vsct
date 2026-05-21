@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <Commands package="guidUEReflectWatchPackage">
+
+    <Menus>
+      <Menu guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbar" priority="0x0000" type="Toolbar">
+        <Parent guid="guidUEReflectWatchCmdSet" id="0" />
+        <Strings>
+          <ButtonText>UE Reflect Watch</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Groups>
+      <Group guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbarGroup" priority="0x0000">
+        <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbar" />
+      </Group>
+    </Groups>
+
+    <Buttons>
+
+      <Button guid="guidUEReflectWatchCmdSet" id="cmdidRebuildNow" priority="0x0100" type="Button">
+        <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbarGroup" />
+        <Strings>
+          <ButtonText>UE: Rebuild Now</ButtonText>
+          <ToolTipText>Close the Unreal Editor, rebuild the project, and relaunch the editor</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidUEReflectWatchCmdSet" id="cmdidToggleSilentMode" priority="0x0101" type="Button">
+        <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbarGroup" />
+        <CommandFlag>TogglePatternAvailable</CommandFlag>
+        <Strings>
+          <ButtonText>UE: Silent OFF</ButtonText>
+          <ToolTipText>Toggle silent mode. When ON, the automatic rebuild prompt is suppressed on save.</ToolTipText>
+        </Strings>
+      </Button>
+
+    </Buttons>
+
+  </Commands>
+
+  <Symbols>
+
+    <GuidSymbol name="guidUEReflectWatchPackage" value="{a1b2c3d4-e5f6-7890-abcd-ef1234567890}" />
+
+    <GuidSymbol name="guidUEReflectWatchCmdSet" value="{c2d3e4f5-a6b7-8901-cdef-012345678902}">
+      <IDSymbol name="UEReflectWatchToolbar" value="0x1000" />
+      <IDSymbol name="UEReflectWatchToolbarGroup" value="0x1001" />
+      <IDSymbol name="cmdidRebuildNow" value="0x0100" />
+      <IDSymbol name="cmdidToggleSilentMode" value="0x0101" />
+    </GuidSymbol>
+
+  </Symbols>
+
+</CommandTable>
