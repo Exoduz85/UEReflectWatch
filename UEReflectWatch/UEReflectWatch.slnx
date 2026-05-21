@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="UEReflectWatch.csproj">
+    <Deploy />
+  </Project>
+</Solution>
