@@ -40,12 +40,19 @@ namespace UEReflectWatch
             WriteIndented = true
         };
 
-        public StateStore()
+        public StateStore() : this(
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "UEReflectWatch"))
         {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var dir = Path.Combine(appData, "UEReflectWatch");
-            Directory.CreateDirectory(dir);
-            _storePath = Path.Combine(dir, "macro-state.json");
+        }
+
+        public StateStore(string globalStoragePath)
+        {
+            if (!Directory.Exists(globalStoragePath))
+                Directory.CreateDirectory(globalStoragePath);
+
+            _storePath = Path.Combine(globalStoragePath, "macro-state.json");
             Load();
         }
 
@@ -120,5 +127,8 @@ namespace UEReflectWatch
 
         public Dictionary<string, FileMacroState> GetFullState() =>
             new(_state, StringComparer.OrdinalIgnoreCase);
+
+        public List<string> GetAllFiles() =>
+            new List<string>(_state.Keys);
     }
 }

@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
- 
+
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <Nullable>enable</Nullable>
@@ -7,7 +7,7 @@
     <IsPackable>false</IsPackable>
     <RootNamespace>UEReflectWatch.Tests</RootNamespace>
   </PropertyGroup>
- 
+
   <ItemGroup>
     <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.8">
@@ -15,10 +15,13 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
   </ItemGroup>
- 
+
   <ItemGroup>
     <Compile Include="..\UEReflectWatch\MacroScanner.cs" />
+    <Compile Include="..\UEReflectWatch\StateStore.cs" />
+    <Compile Include="..\UEReflectWatch\ProjectScanner.cs" />
   </ItemGroup>
- 
+
 </Project>

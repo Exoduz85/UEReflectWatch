@@ -2,28 +2,47 @@
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable"
               xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <Extern href="stdidcmd.h"/>
-  <Extern href="vsshlids.h"/>
-
   <Commands package="guidUEReflectWatchPackage">
 
     <Menus>
+
+      <!-- Toolbar with Rebuild Now and Silent Mode -->
       <Menu guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbar" priority="0x0000" type="Toolbar">
         <Parent guid="guidUEReflectWatchCmdSet" id="0" />
         <Strings>
           <ButtonText>UE Reflect Watch</ButtonText>
         </Strings>
       </Menu>
+
+      <!-- Top-level menu. Parented to IDG_VS_MM_TOOLSADDINS (0x0104).
+           VS 2019+ automatically places this under the Extensions menu. -->
+      <Menu guid="guidUEReflectWatchCmdSet" id="UEReflectWatchMenu" priority="0x0700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+        <Strings>
+          <ButtonText>UE Reflect Watch</ButtonText>
+          <CommandName>UEReflectWatch</CommandName>
+        </Strings>
+      </Menu>
+
     </Menus>
 
     <Groups>
+
+      <!-- Toolbar group -->
       <Group guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbarGroup" priority="0x0000">
         <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbar" />
       </Group>
+
+      <!-- Group inside the top-level menu -->
+      <Group guid="guidUEReflectWatchCmdSet" id="UEReflectWatchMenuGroup" priority="0x0000">
+        <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchMenu" />
+      </Group>
+
     </Groups>
 
     <Buttons>
 
+      <!-- Toolbar: Rebuild Now -->
       <Button guid="guidUEReflectWatchCmdSet" id="cmdidRebuildNow" priority="0x0100" type="Button">
         <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbarGroup" />
         <Strings>
@@ -32,12 +51,41 @@
         </Strings>
       </Button>
 
+      <!-- Toolbar: Toggle Silent Mode -->
       <Button guid="guidUEReflectWatchCmdSet" id="cmdidToggleSilentMode" priority="0x0101" type="Button">
         <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchToolbarGroup" />
-        <CommandFlag>TogglePatternAvailable</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>UE: Silent OFF</ButtonText>
           <ToolTipText>Toggle silent mode. When ON, the automatic rebuild prompt is suppressed on save.</ToolTipText>
+        </Strings>
+      </Button>
+
+      <!-- Menu: Rebuild Now -->
+      <Button guid="guidUEReflectWatchCmdSet" id="cmdidRebuildNowMenu" priority="0x0100" type="Button">
+        <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchMenuGroup" />
+        <Strings>
+          <ButtonText>Rebuild Now</ButtonText>
+          <ToolTipText>Close the Unreal Editor, rebuild the project, and relaunch the editor</ToolTipText>
+        </Strings>
+      </Button>
+
+      <!-- Menu: Toggle Silent Mode -->
+      <Button guid="guidUEReflectWatchCmdSet" id="cmdidToggleSilentModeMenu" priority="0x0101" type="Button">
+        <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchMenuGroup" />
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Silent Mode: OFF</ButtonText>
+          <ToolTipText>Toggle silent mode. When ON, the automatic rebuild prompt is suppressed on save.</ToolTipText>
+        </Strings>
+      </Button>
+
+      <!-- Menu: Initial Project Scan -->
+      <Button guid="guidUEReflectWatchCmdSet" id="cmdidInitialScan" priority="0x0102" type="Button">
+        <Parent guid="guidUEReflectWatchCmdSet" id="UEReflectWatchMenuGroup" />
+        <Strings>
+          <ButtonText>Initial Project Scan</ButtonText>
+          <ToolTipText>Scan all header files in the project and build a macro baseline. Run this once after installing the extension on an existing project.</ToolTipText>
         </Strings>
       </Button>
 
@@ -49,11 +97,24 @@
 
     <GuidSymbol name="guidUEReflectWatchPackage" value="{a1b2c3d4-e5f6-7890-abcd-ef1234567890}" />
 
+    <!-- guidSHLMainMenu is the built-in VS menu bar GUID.
+         IDG_VS_MM_TOOLSADDINS = 0x0104 (from vsshlids.h).
+         This is where extension top-level menus are placed,
+         appearing under Extensions in VS 2019+. -->
+    <GuidSymbol name="guidSHLMainMenu" value="{d309f791-903f-11d0-9efc-00a0c911004f}">
+      <IDSymbol name="IDG_VS_MM_TOOLSADDINS" value="0x0104" />
+    </GuidSymbol>
+
     <GuidSymbol name="guidUEReflectWatchCmdSet" value="{c2d3e4f5-a6b7-8901-cdef-012345678902}">
       <IDSymbol name="UEReflectWatchToolbar" value="0x1000" />
       <IDSymbol name="UEReflectWatchToolbarGroup" value="0x1001" />
+      <IDSymbol name="UEReflectWatchMenu" value="0x1002" />
+      <IDSymbol name="UEReflectWatchMenuGroup" value="0x1003" />
       <IDSymbol name="cmdidRebuildNow" value="0x0100" />
       <IDSymbol name="cmdidToggleSilentMode" value="0x0101" />
+      <IDSymbol name="cmdidRebuildNowMenu" value="0x0102" />
+      <IDSymbol name="cmdidToggleSilentModeMenu" value="0x0103" />
+      <IDSymbol name="cmdidInitialScan" value="0x0104" />
     </GuidSymbol>
 
   </Symbols>

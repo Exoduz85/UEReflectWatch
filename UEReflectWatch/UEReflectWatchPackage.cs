@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -23,6 +24,9 @@ namespace UEReflectWatch
         public static readonly Guid CommandSetGuid = new Guid("c2d3e4f5-a6b7-8901-cdef-012345678902");
         public const int CmdIdRebuildNow = 0x0100;
         public const int CmdIdToggleSilentMode = 0x0101;
+        public const int CmdIdRebuildNowMenu = 0x0102;
+        public const int CmdIdToggleSilentModeMenu = 0x0103;
+        public const int CmdIdInitialScan = 0x0104;
 
         private IVsRunningDocumentTable? _rdt;
         private uint _rdtCookie;
@@ -56,20 +60,33 @@ namespace UEReflectWatch
                 _rdt.AdviseRunningDocTableEvents(this, out _rdtCookie);
             }
 
-            // Register toolbar commands.
+            // Register toolbar and menu commands.
             var commandService = await GetServiceAsync(typeof(IMenuCommandService)) as IMenuCommandService;
             if (commandService != null)
             {
-                // Rebuild Now button.
+                // Toolbar: Rebuild Now.
                 var rebuildId = new CommandID(CommandSetGuid, CmdIdRebuildNow);
-                var rebuildCmd = new MenuCommand(OnRebuildNowClicked, rebuildId);
-                commandService.AddCommand(rebuildCmd);
+                commandService.AddCommand(new MenuCommand(OnRebuildNowClicked, rebuildId));
 
-                // Toggle Silent Mode button.
+                // Toolbar: Toggle Silent Mode.
                 var toggleId = new CommandID(CommandSetGuid, CmdIdToggleSilentMode);
                 var toggleCmd = new OleMenuCommand(OnToggleSilentModeClicked, toggleId);
                 toggleCmd.BeforeQueryStatus += OnToggleQueryStatus;
                 commandService.AddCommand(toggleCmd);
+
+                // Menu: Rebuild Now.
+                var rebuildMenuId = new CommandID(CommandSetGuid, CmdIdRebuildNowMenu);
+                commandService.AddCommand(new MenuCommand(OnRebuildNowClicked, rebuildMenuId));
+
+                // Menu: Toggle Silent Mode.
+                var toggleMenuId = new CommandID(CommandSetGuid, CmdIdToggleSilentModeMenu);
+                var toggleMenuCmd = new OleMenuCommand(OnToggleSilentModeClicked, toggleMenuId);
+                toggleMenuCmd.BeforeQueryStatus += OnToggleSilentModeMenuQueryStatus;
+                commandService.AddCommand(toggleMenuCmd);
+
+                // Menu: Initial Project Scan.
+                var scanId = new CommandID(CommandSetGuid, CmdIdInitialScan);
+                commandService.AddCommand(new OleMenuCommand(OnInitialScanClicked, scanId));
             }
 
             // Resolve the Unreal project from the solution directory.
@@ -133,15 +150,119 @@ namespace UEReflectWatch
             Log($"Silent mode: {state}");
         }
 
-        // Updates the toggle button checked state to reflect current SilentMode.
+        // Updates the toolbar toggle button text and checked state.
         private void OnToggleQueryStatus(object sender, EventArgs e)
         {
             if (sender is OleMenuCommand cmd)
             {
                 var options = GetDialogPage(typeof(UEReflectWatchOptions)) as UEReflectWatchOptions;
-                cmd.Checked = options?.SilentMode ?? false;
-                cmd.Text = cmd.Checked ? "UE: Silent ON" : "UE: Silent OFF";
+                var silentOn = options?.SilentMode ?? false;
+                cmd.Checked = silentOn;
+                cmd.Text = silentOn ? "UE: Silent ON" : "UE: Silent OFF";
             }
+        }
+
+        // Updates the menu toggle item text and checked state.
+        private void OnToggleSilentModeMenuQueryStatus(object sender, EventArgs e)
+        {
+            if (sender is OleMenuCommand cmd)
+            {
+                var options = GetDialogPage(typeof(UEReflectWatchOptions)) as UEReflectWatchOptions;
+                var silentOn = options?.SilentMode ?? false;
+                cmd.Checked = silentOn;
+                cmd.Text = silentOn ? "Silent Mode: ON" : "Silent Mode: OFF";
+            }
+        }
+
+        // Tools menu command: Initial Project Scan.
+        private void OnInitialScanClicked(object sender, EventArgs e)
+        {
+            JoinableTaskFactory.RunAsync(async () => await RunInitialScanAsync());
+        }
+
+        private async Task RunInitialScanAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            if (_stateStore is null) return;
+
+            if (_project is null)
+                await TryResolveProjectAsync();
+
+            if (_project is null)
+            {
+                VsShellUtilities.ShowMessageBox(
+                    this,
+                    "No .uproject found or engine path not resolved.\n\nSet the Engine Path Override in Tools > Options > UE Reflect Watch.",
+                    "UE Reflect Watch: Cannot Scan",
+                    OLEMSGICON.OLEMSGICON_WARNING,
+                    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                return;
+            }
+
+            // Warn if state already exists so the user does not accidentally
+            // overwrite a working baseline with a fresh one.
+            var existingFiles = _stateStore.GetAllFiles();
+            if (existingFiles.Count > 0)
+            {
+                var overwriteResult = VsShellUtilities.ShowMessageBox(
+                    this,
+                    $"UE Reflect Watch already has a baseline for {existingFiles.Count} file(s).\n\n" +
+                    "Running an initial scan will replace the existing baseline with the current state of all header files.\n\n" +
+                    "This will not trigger a rebuild. Any macro changes made after the scan " +
+                    "will be detected normally on the next save.\n\n" +
+                    "Continue?",
+                    "UE Reflect Watch: Initial Project Scan",
+                    OLEMSGICON.OLEMSGICON_QUERY,
+                    OLEMSGBUTTON.OLEMSGBUTTON_YESNO,
+                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND);
+
+                // IDYES = 6
+                if (overwriteResult != 6) return;
+            }
+
+            _outputPane?.Activate();
+            Log("Initial project scan started...");
+
+            var projectRootDir = Path.GetDirectoryName(_project.UprojectPath)!;
+
+            // Run the file system scan on a background thread to avoid
+            // blocking the UI thread while walking potentially thousands of files.
+            var scanResult = await Task.Run(() =>
+                ProjectScanner.ScanAndSeed(projectRootDir, _stateStore));
+
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            Log($"Initial scan complete.");
+            Log($"  Files scanned  : {scanResult.FilesScanned}");
+            Log($"  Files with macros : {scanResult.FilesWithMacros}");
+            Log($"  Total macros found: {scanResult.TotalMacros}");
+
+            if (scanResult.Errors.Count > 0)
+            {
+                Log($"  Errors ({scanResult.Errors.Count}):");
+                foreach (var error in scanResult.Errors)
+                    Log($"    {error}");
+            }
+
+            var errorNote = scanResult.Errors.Count > 0
+                ? $"\n\n{scanResult.Errors.Count} file(s) could not be read. See the output pane for details."
+                : string.Empty;
+
+            VsShellUtilities.ShowMessageBox(
+                this,
+                $"Initial scan complete.\n\n" +
+                $"Files scanned: {scanResult.FilesScanned}\n" +
+                $"Files with macros: {scanResult.FilesWithMacros}\n" +
+                $"Total macros found: {scanResult.TotalMacros}\n\n" +
+                $"The extension now has a baseline for your project. " +
+                $"Macro changes will be detected correctly from the next save onwards." +
+                errorNote,
+                "UE Reflect Watch: Initial Scan Complete",
+                scanResult.Errors.Count > 0 ? OLEMSGICON.OLEMSGICON_WARNING : OLEMSGICON.OLEMSGICON_INFO,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
 
         // IVsRunningDocTableEvents: fires after every document save.
