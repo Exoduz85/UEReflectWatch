@@ -2,13 +2,14 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="UEReflectWatch.FredrikWallander" Version="0.1.0" Language="en-US"
+    <Identity Id="UEReflectWatch.FredrikWallander" Version="0.1.1" Language="en-US"
               Publisher="Fredrik Wallander" />
     <DisplayName>UE Reflect Watch</DisplayName>
     <Description>Detects Unreal Engine reflection macro changes (UCLASS, UPROPERTY, UFUNCTION, USTRUCT, UENUM) in header files and prompts a rebuild cycle: closes the Unreal Editor, rebuilds, and relaunches.</Description>
     <License>LICENSE.txt</License>
     <Icon>UEReflectWatchIcon.png</Icon>
-    <Tags>unreal engine 5, c++, uclass, uproperty, ufunction, game development</Tags>
+    <Preview>true</Preview>
+    <Tags>unreal engine, c++, uclass, uproperty, ufunction, game development</Tags>
     <ProjectType>VSIX</ProjectType>
   </Metadata>
   <Installation>
