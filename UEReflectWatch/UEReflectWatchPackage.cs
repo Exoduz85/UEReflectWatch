@@ -18,10 +18,10 @@ namespace UEReflectWatch
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class UEReflectWatchPackage : AsyncPackage, IVsRunningDocTableEvents
     {
-        public const string PackageGuidString = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
+        public const string PackageGuidString = "05F701D1-C367-448A-AFD6-91FCE6A76680";
 
         // Command IDs - must match UEReflectWatch.vsct
-        public static readonly Guid CommandSetGuid = new Guid("c2d3e4f5-a6b7-8901-cdef-012345678902");
+        public static readonly Guid CommandSetGuid = new Guid("0C43793C-CB2C-4D3B-8962-E9AC9DE0E25D");
         public const int CmdIdRebuildNow = 0x0100;
         public const int CmdIdToggleSilentMode = 0x0101;
         public const int CmdIdRebuildNowMenu = 0x0102;

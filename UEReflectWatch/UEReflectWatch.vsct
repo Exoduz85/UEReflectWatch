@@ -95,7 +95,7 @@
 
   <Symbols>
 
-    <GuidSymbol name="guidUEReflectWatchPackage" value="{a1b2c3d4-e5f6-7890-abcd-ef1234567890}" />
+    <GuidSymbol name="guidUEReflectWatchPackage" value="{05F701D1-C367-448A-AFD6-91FCE6A76680}" />
 
     <!-- guidSHLMainMenu is the built-in VS menu bar GUID.
          IDG_VS_MM_TOOLSADDINS = 0x0104 (from vsshlids.h).
@@ -105,7 +105,7 @@
       <IDSymbol name="IDG_VS_MM_TOOLSADDINS" value="0x0104" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidUEReflectWatchCmdSet" value="{c2d3e4f5-a6b7-8901-cdef-012345678902}">
+    <GuidSymbol name="guidUEReflectWatchCmdSet" value="{0C43793C-CB2C-4D3B-8962-E9AC9DE0E25D}">
       <IDSymbol name="UEReflectWatchToolbar" value="0x1000" />
       <IDSymbol name="UEReflectWatchToolbarGroup" value="0x1001" />
       <IDSymbol name="UEReflectWatchMenu" value="0x1002" />

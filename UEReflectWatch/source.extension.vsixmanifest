@@ -7,7 +7,8 @@
     <DisplayName>UE Reflect Watch</DisplayName>
     <Description>Detects Unreal Engine reflection macro changes (UCLASS, UPROPERTY, UFUNCTION, USTRUCT, UENUM) in header files and prompts a rebuild cycle: closes the Unreal Editor, rebuilds, and relaunches.</Description>
     <License>LICENSE.txt</License>
-    <Tags>unreal engine, c++, uclass, uproperty, ufunction, game development</Tags>
+    <Icon>UEReflectWatchIcon.png</Icon>
+    <Tags>unreal engine 5, c++, uclass, uproperty, ufunction, game development</Tags>
     <ProjectType>VSIX</ProjectType>
   </Metadata>
   <Installation>
