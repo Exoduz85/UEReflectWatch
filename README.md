@@ -42,7 +42,7 @@ This includes adding, removing, changing specifiers (e.g. `EditAnywhere` to `Edi
 | IDE | Marketplace | Status |
 | --- | --- | --- |
 | Visual Studio 2022 / 2026 | [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=FredrikWallander.Beta1) | Preview |
-| JetBrains Rider | [JetBrains Marketplace](https://plugins.jetbrains.com) | Preview |
+| JetBrains Rider | [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/31968-ue-reflect-watch) | Preview |
 
 ---
 
