@@ -11,6 +11,9 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class UEReflectWatchToolWindowFactory : ToolWindowFactory {
+
+    override fun shouldBeAvailable(project: Project): Boolean = true
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val console = UEReflectWatchConsole.getOrCreate(project)
         val content = ContentFactory.getInstance()

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.ueReflectWatch"
-version = "0.1.0"
+version = "0.1.2"
 
 repositories {
     mavenCentral()
@@ -28,7 +28,7 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         name = "UE Reflect Watch"
-        version = "0.1.0"
+        version = "0.1.2"
 
         ideaVersion {
             sinceBuild = "261"

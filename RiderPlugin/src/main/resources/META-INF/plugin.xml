@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.ueReflectWatch</id>
     <name>UE Reflect Watch</name>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <vendor email="" url="https://github.com/Exoduz85/UEReflectWatch">Fredrik Wallander</vendor>
 
     <description><![CDATA[
@@ -88,27 +88,26 @@
 
         <!-- Persistent settings -->
         <applicationService
-            serviceInterface="com.ueReflectWatch.settings.UEReflectWatchSettings"
-            serviceImplementation="com.ueReflectWatch.settings.UEReflectWatchSettings"/>
+                serviceInterface="com.ueReflectWatch.settings.UEReflectWatchSettings"
+                serviceImplementation="com.ueReflectWatch.settings.UEReflectWatchSettings"/>
 
         <!-- Settings UI page -->
         <applicationConfigurable
-            parentId="tools"
-            instance="com.ueReflectWatch.settings.UEReflectWatchConfigurable"
-            id="com.ueReflectWatch.settings"
-            displayName="UE Reflect Watch"/>
+                parentId="tools"
+                instance="com.ueReflectWatch.settings.UEReflectWatchConfigurable"
+                id="com.ueReflectWatch.settings"
+                displayName="UE Reflect Watch"/>
 
         <!-- File save listener registered as a project service -->
         <projectService
-            serviceImplementation="com.ueReflectWatch.FileSaveListener"/>
+                serviceImplementation="com.ueReflectWatch.FileSaveListener"/>
 
         <!-- Tool window showing build log output -->
         <toolWindow
-            id="UE Reflect Watch"
-            anchor="bottom"
-            factoryClass="com.ueReflectWatch.toolwindow.UEReflectWatchToolWindowFactory"
-            icon="/icons/ueReflectWatch.svg"
-            canCloseContents="false"/>
+                id="UE Reflect Watch"
+                anchor="bottom"
+                factoryClass="com.ueReflectWatch.toolwindow.UEReflectWatchToolWindowFactory"
+                canCloseContents="false"/>
 
     </extensions>
 
