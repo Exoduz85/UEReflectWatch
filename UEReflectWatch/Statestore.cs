@@ -28,6 +28,9 @@ namespace UEReflectWatch
 
         [JsonPropertyName("raw")]
         public string Raw { get; set; } = string.Empty;
+
+        [JsonPropertyName("declarationLine")]
+        public string DeclarationLine { get; set; } = string.Empty;
     }
 
     public sealed class StateStore
@@ -92,7 +95,7 @@ namespace UEReflectWatch
             foreach (var m in entry.Macros)
             {
                 if (Enum.TryParse<MacroKind>(m.Kind, out var kind))
-                    result.Add(new MacroEntry(kind, m.Line, m.Raw));
+                    result.Add(new MacroEntry(kind, m.Line, m.Raw, m.DeclarationLine));
             }
             return result;
         }
@@ -107,7 +110,8 @@ namespace UEReflectWatch
                 {
                     Kind = m.Kind.ToString(),
                     Line = m.Line,
-                    Raw = m.Raw
+                    Raw = m.Raw,
+                    DeclarationLine = m.DeclarationLine
                 })
             };
             Save();

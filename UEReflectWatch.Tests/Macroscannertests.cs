@@ -576,6 +576,36 @@ class AFoo : public AActor
         }
 
         [Fact]
+        public void RoundTrip_ChangeVariableType_IsDetected()
+        {
+            var before = "    UPROPERTY(EditAnywhere)\n    bool bIsActive;";
+            var after  = "    UPROPERTY(EditAnywhere)\n    float Speed;";
+            var diff = MacroScanner.Diff(MacroScanner.Scan(before), MacroScanner.Scan(after));
+            Assert.True(diff.HasChanges);
+            Assert.Single(diff.Added);
+            Assert.Single(diff.Removed);
+        }
+
+        [Fact]
+        public void RoundTrip_RenameVariable_IsDetected()
+        {
+            var before = "    UPROPERTY(EditAnywhere)\n    float Health;";
+            var after  = "    UPROPERTY(EditAnywhere)\n    float MaxHealth;";
+            var diff = MacroScanner.Diff(MacroScanner.Scan(before), MacroScanner.Scan(after));
+            Assert.True(diff.HasChanges);
+            Assert.Single(diff.Added);
+            Assert.Single(diff.Removed);
+        }
+
+        [Fact]
+        public void RoundTrip_SameTypeAndName_NoChange()
+        {
+            var content = "    UPROPERTY(EditAnywhere)\n    float Health;";
+            var diff = MacroScanner.Diff(MacroScanner.Scan(content), MacroScanner.Scan(content));
+            Assert.False(diff.HasChanges);
+        }
+
+        [Fact]
         public void RoundTrip_OnlyBodyChanged_NoMacroChange()
         {
             var before = @"

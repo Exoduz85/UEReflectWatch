@@ -12,17 +12,22 @@ namespace UEReflectWatch
         public MacroKind Kind { get; }
         public int Line { get; }
         public string Raw { get; }
+        // The declaration line immediately following the macro (variable type+name
+        // or function signature). Included in the key so that renaming a variable
+        // or changing its type is detected even if the macro specifiers are unchanged.
+        public string DeclarationLine { get; }
 
-        public MacroEntry(MacroKind kind, int line, string raw)
+        public MacroEntry(MacroKind kind, int line, string raw, string declarationLine = "")
         {
             Kind = kind;
             Line = line;
             Raw = raw;
+            DeclarationLine = declarationLine;
         }
 
-        // Identity key used for diffing. Kind + raw text so that specifier
-        // changes (e.g. EditAnywhere -> EditDefaultsOnly) are caught.
-        public string Key => $"{Kind}|{Raw}";
+        // Identity key used for diffing. Kind + raw text + declaration so that
+        // specifier changes AND variable type/name changes are all caught.
+        public string Key => $"{Kind}|{Raw}|{DeclarationLine.Trim()}";
     }
 
     public sealed class MacroDiff
@@ -42,7 +47,9 @@ namespace UEReflectWatch
         public static List<MacroEntry> Scan(string content)
         {
             var results = new List<MacroEntry>();
-            var lines = content.Split('\n');
+            // Normalise CRLF to LF so declarationLine trimming is consistent
+            // regardless of whether content came from File.ReadAllText or an in-memory string.
+            var lines = content.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -51,7 +58,20 @@ namespace UEReflectWatch
 
                 if (!Enum.TryParse<MacroKind>(match.Groups[1].Value, out var kind)) continue;
 
-                results.Add(new MacroEntry(kind, i + 1, lines[i].Trim()));
+                // Capture the next non-blank line as the declaration.
+                // This includes the variable type+name or function signature
+                // so that renaming a variable or changing its type is detected.
+                var declarationLine = "";
+                for (int j = i + 1; j < lines.Length; j++)
+                {
+                    if (!string.IsNullOrWhiteSpace(lines[j]))
+                    {
+                        declarationLine = lines[j].Trim();
+                        break;
+                    }
+                }
+
+                results.Add(new MacroEntry(kind, i + 1, lines[i].Trim(), declarationLine));
             }
 
             return results;
