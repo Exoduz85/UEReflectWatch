@@ -1,131 +1,129 @@
 # UE Reflect Watch
 
-A Visual Studio 2022 and 2026 extension that monitors Unreal Engine C++ header files for reflection macro changes (`UCLASS`, `UPROPERTY`, `UFUNCTION`, `USTRUCT`, `UENUM`) and automates the rebuild cycle: closes the Unreal Editor, rebuilds the project, and relaunches the editor.
+**Stop manually closing and reopening Unreal Editor every time you add a UPROPERTY.**
 
-***Currently in Beta version, use at your own risk, might contain bugs!***
+UE Reflect Watch monitors your Unreal Engine C++ header files for reflection macro changes and automatically handles the rebuild cycle: closing the editor, rebuilding the project, and relaunching.
 
-## The problem it solves
+Available for both **Visual Studio** and **JetBrains Rider**.
 
-When you add or remove any Unreal reflection macro in a header file, you must close the Unreal Editor, do a full build, and reopen the editor before the change takes effect. Live Coding cannot handle reflection table changes. This extension automates that cycle so you never have to do it manually.
+---
 
-## What it does
+## The problem
 
-1. On every `.h` file save, scans for `UCLASS`, `UPROPERTY`, `UFUNCTION`, `USTRUCT`, and `UENUM` macros.
-2. Compares against the last saved state (stored in a JSON file in `%LocalAppData%\UEReflectWatch\`).
-3. If macros were added, removed, or had their specifiers changed:
-   - Shows an optional confirmation dialog: "Have you saved your work in the Unreal Editor?"
-   - If auto-rebuild is off, asks: "Rebuild now?"
-   - Closes `UnrealEditor.exe`, runs `Build.bat`, and relaunches the editor on success.
-4. Streams all build output to a dedicated **UE Reflect Watch** output pane in Visual Studio.
+Every Unreal C++ developer knows this:
+
+1. Add a `UPROPERTY` or `UFUNCTION` to a header file
+2. Remember to close the Unreal Editor
+3. Build the project
+4. Wait
+5. Reopen the editor
+6. Continue working
+
+Live Coding cannot handle reflection table changes. This is a hard limitation of how Unreal's macro system works. The restart is unavoidable and doing it manually every single time is not.
+
+---
+
+## What it detects
+
+Changes to any of the following macros trigger the rebuild cycle:
+
+- `UCLASS`
+- `UPROPERTY`
+- `UFUNCTION`
+- `USTRUCT`
+- `UENUM`
+
+This includes adding, removing, changing specifiers (e.g. `EditAnywhere` to `EditDefaultsOnly`), and renaming or retyping the variable or function the macro is attached to. Changes to function bodies, regular member variables without macros, includes, and comments do not trigger a rebuild.
+
+---
+
+## Downloads
+
+| IDE | Marketplace | Status |
+| --- | --- | --- |
+| Visual Studio 2022 / 2026 | [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=FredrikWallander.Beta1) | Preview |
+| JetBrains Rider | [JetBrains Marketplace](https://plugins.jetbrains.com) | Preview |
+
+---
 
 ## Requirements
 
-- Windows.
-- Visual Studio 2022 (17.x) or Visual Studio 2026 (18.x).
-- Unreal Engine 5.x installed via the Epic Games Launcher.
-- A solution opened from the root of a `.uproject` folder.
+### Visual Studio extension
+- Windows
+- Visual Studio 2022 (17.x) or Visual Studio 2026 (18.x)
+- Unreal Engine 5.x installed via the Epic Games Launcher
+- A solution opened from the root of a `.uproject` folder
 
-## Installation
+### Rider plugin
+- Windows or macOS
+- JetBrains Rider 2026.1 or later
+- Unreal Engine 5.x installed via the Epic Games Launcher
+- A solution opened from the root of a `.uproject` folder
 
-### From the Marketplace
+---
 
-Install directly from the Visual Studio Marketplace.
+## Getting started
 
-### From source
+### Important: run the Initial Project Scan first
 
-1. Open `UEReflectWatch.sln` in Visual Studio 2022 or 2026.
-2. Build the solution. This produces `UEReflectWatch.vsix` in the output folder.
-3. Close Visual Studio.
-4. Double-click the `.vsix` file to install it.
-5. Reopen Visual Studio.
+If you are adding this tool to an existing project, **run the Initial Project Scan before you start working**. Without it, the tool has no baseline to compare against and the first save of every header file will look like all macros were just added, triggering false positive rebuild prompts.
 
-## First time setup
+### Visual Studio
 
-> **Important:** If you are adding this extension to an existing project, run the Initial Project Scan before you start working. Without it, the extension has no baseline to compare against, and the first save of every `.h` file will look like all macros were just added, triggering false positive rebuild prompts.
+1. Install the extension from the Visual Studio Marketplace or from the `.vsix` file.
+2. Open your Unreal project solution in Visual Studio.
+3. Go to **Extensions > UE Reflect Watch > Initial Project Scan** and run it once.
+4. Right-click the toolbar strip and enable the **UE Reflect Watch** toolbar.
+5. Add a `UPROPERTY` to any header file and save. The extension takes it from there.
 
-### Initial Project Scan
+### Rider
 
-The Initial Project Scan walks all header files in your project's `Source/` folder, records their current macro state, and writes it to the state store. After the scan, the extension has a correct baseline and will only prompt when something actually changes.
+1. Install the plugin via **File > Settings > Plugins > Install Plugin from Disk**, or search for it on the JetBrains Marketplace.
+2. Restart Rider.
+3. Open your Unreal project solution.
+4. Go to **Tools > UE Reflect Watch > Initial Project Scan** and run it once.
+5. The **UE Reflect Watch** tool window appears at the bottom of the IDE (alongside Terminal and Run).
+6. Add a `UPROPERTY` to any header file and save with `Ctrl+S`. The plugin takes it from there.
 
-**How to run it:**
+---
 
-1. Open your Unreal project solution in Visual Studio.
-2. Go to **Extensions > UE Reflect Watch > Initial Project Scan**.
-3. If a baseline already exists, the extension will ask whether you want to overwrite it.
-4. When the scan completes, a summary dialog shows how many files were scanned and how many macros were found.
+## Engine path setup
 
-You only need to run this once per project. After that, the extension tracks changes automatically on every save.
+The tool reads the `EngineAssociation` field from your `.uproject` file and constructs the default Epic Games Launcher install path automatically:
 
-### Engine path
+- **Windows:** `C:\Program Files\Epic Games\UE_5.x`
+- **macOS:** `/Users/Shared/Epic Games/UE_5.x`
 
-The extension reads the `EngineAssociation` field from your `.uproject` file (for example `"5.7"`) and constructs the default Epic Games Launcher install path:
+If your engine is installed elsewhere, set the path override:
 
-```
-C:\Program Files\Epic Games\UE_5.7
-```
+- **Visual Studio:** Tools > Options > UE Reflect Watch > Engine Path Override
+- **Rider:** File > Settings > Tools > UE Reflect Watch > Engine Path Override
 
-If your engine is installed elsewhere, set the override in **Tools > Options > UE Reflect Watch > Engine Path Override**.
+---
 
-## Toolbar
+## Building from source
 
-The extension adds a **UE Reflect Watch** toolbar to Visual Studio. Right-click any empty area on the toolbar strip and tick **UE Reflect Watch** to show it.
+### Visual Studio extension
 
-| Button | Description |
-| --- | --- |
-| UE: Rebuild Now | Triggers the full rebuild cycle immediately. Closes the editor, builds, and relaunches. |
-| UE: Silent OFF / Silent ON | Toggles silent mode. When ON, macro changes are logged but no prompt appears on save. Use the Rebuild Now button when you are ready to rebuild. |
+1. Open `VSExtension/UEReflectWatch.sln` in Visual Studio 2022 or 2026.
+2. Build the solution in Release mode.
+3. The `.vsix` file is produced in the output folder.
+4. Close Visual Studio, double-click the `.vsix` to install, reopen Visual Studio.
 
-## Menu
+### Rider plugin
 
-All extension commands are also available under **Extensions > UE Reflect Watch**:
+1. Open `RiderPlugin/` as a project in IntelliJ IDEA.
+2. Let Gradle sync (downloads the IntelliJ Platform SDK on first run).
+3. Run `.\gradlew buildPlugin`.
+4. The `.zip` file is produced in `RiderPlugin/build/distributions/`.
+5. In Rider: **File > Settings > Plugins > gear icon > Install Plugin from Disk**.
 
-| Command | Description |
-| --- | --- |
-| Rebuild Now | Triggers the full rebuild cycle immediately. |
-| Silent Mode: OFF / Silent Mode: ON | Toggles silent mode. |
-| Initial Project Scan | Scans all header files and builds a macro baseline. |
+---
 
-## Options
+## License
 
-Access via **Tools > Options > UE Reflect Watch**.
+MIT, See [LICENSE.txt](LICENSE.txt).
 
-| Option | Default | Description |
-| --- | --- | --- |
-| Silent Mode | false | When ON, suppresses the automatic prompt on save. Changes are still logged to the output pane. |
-| Auto Rebuild | false | Rebuild automatically without prompting when macro changes are detected. |
-| Confirm Before Rebuild | true | Show a confirmation dialog asking whether you have saved your work before the rebuild starts. |
-| Auto Relaunch Editor | true | Relaunch the Unreal Editor after a successful build. |
-| Kill Editor Grace Period (ms) | 2000 | Milliseconds to wait after closing the editor process before starting the build. |
-| Engine Path Override | (empty) | Override the engine path. Leave empty to use the default Epic Games Launcher location. |
+---
 
-## Output pane
-
-All build output is streamed to the **UE Reflect Watch** pane in the Visual Studio Output window (**View > Output**, then select "UE Reflect Watch" in the dropdown). This shows the full UnrealBuildTool output including any compiler errors, which is easier to read than the Error List.
-
-## What counts as a change
-
-A rebuild is flagged when any of the following happens in a `.h` file:
-
-- A new `UCLASS()`, `UPROPERTY(...)`, `UFUNCTION(...)`, `USTRUCT()`, or `UENUM()` macro is added.
-- An existing macro of those types is removed.
-- The specifiers on an existing macro change (e.g. `EditAnywhere` changed to `EditDefaultsOnly`).
-
-Changes to function bodies, regular member variables without `UPROPERTY`, includes, and comments do not trigger a rebuild.
-
-## State storage
-
-Macro state is persisted to:
-
-```
-%LocalAppData%\UEReflectWatch\macro-state.json
-```
-
-Delete this file to reset the state, or run **Initial Project Scan** again to rebuild it from the current project. All header files will be treated as new on the next save if the file does not exist.
-
-## Limitations
-
-- Windows only. Process management uses the Windows API directly.
-- Only monitors files saved through Visual Studio. Files edited externally are not scanned until saved through the IDE.
-- The extension kills `UnrealEditor.exe` without asking you to save first. Use the confirmation dialog (enabled by default) to give yourself time to save before the process is terminated.
-- If you have multiple Unreal projects in the same solution, the extension uses the first `.uproject` it finds in the solution directory.
-- The Settings page under **All Settings > UE Reflect Watch** shows a "not migrated" notice in Visual Studio 2026. This is a Visual Studio 2026 issue affecting all extensions that use the legacy options API. The settings are still fully accessible and functional via **Tools > Options > UE Reflect Watch**.
+*Currently in beta. Use at your own risk.*
