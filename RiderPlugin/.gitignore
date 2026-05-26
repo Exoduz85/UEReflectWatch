@@ -1,0 +1,13 @@
+# Gradle
+.gradle/
+build/
+
+# IntelliJ Platform plugin SDK cache
+.intellijPlatform/
+
+# IntelliJ IDEA
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

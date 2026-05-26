@@ -1,0 +1,167 @@
+<idea-plugin>
+    <id>com.ueReflectWatch</id>
+    <name>UE Reflect Watch</name>
+    <version>0.1.1</version>
+    <vendor email="" url="https://github.com/Exoduz85/UEReflectWatch">Fredrik Wallander</vendor>
+
+    <description><![CDATA[
+        <p>
+            <b>Stop manually closing and reopening Unreal Editor every time you add a UPROPERTY.</b>
+        </p>
+        <p>
+            UE Reflect Watch monitors your Unreal Engine C++ header files for reflection macro changes
+            (UCLASS, UPROPERTY, UFUNCTION, USTRUCT, UENUM) and automatically closes the Unreal Editor,
+            rebuilds the project, and relaunches the editor the moment it detects a change on save.
+        </p>
+        <p>
+            Live Coding cannot handle reflection table changes. This is a hard architectural limitation
+            of how Unreal's macro system works. The restart is unavoidable — doing it manually every
+            single time is not.
+        </p>
+
+        <h2>Features</h2>
+        <ul>
+            <li>Detects macro additions, removals, specifier changes, and variable/function name and type changes</li>
+            <li>Optional confirmation dialog before the editor is closed</li>
+            <li>Silent mode — suppress prompts and rebuild manually when ready</li>
+            <li>Live build output in the UE Reflect Watch tool window</li>
+            <li>Auto-relaunch of the Unreal Editor after a successful build</li>
+            <li>Engine path auto-detected from your .uproject file, with override option</li>
+            <li>Supports Windows and macOS</li>
+        </ul>
+
+        <h2>Getting Started</h2>
+        <ol>
+            <li>Install the plugin and restart Rider.</li>
+            <li>Open your Unreal Engine project solution.</li>
+            <li>
+                <b>Run the Initial Project Scan first.</b><br/>
+                Go to <b>Tools &gt; UE Reflect Watch &gt; Initial Project Scan</b> and run it once.
+                This builds a baseline of all existing macros in your project so the plugin knows
+                what has changed on the next save. Without this step, the first save of every
+                header file will look like all macros were just added, triggering false positive
+                rebuild prompts.
+            </li>
+            <li>
+                The <b>UE Reflect Watch</b> tool window appears at the bottom of Rider alongside
+                the Terminal and Run tabs. All build output streams here in real time.
+            </li>
+            <li>
+                Add a UPROPERTY to any header file and save with <b>Ctrl+S</b>.
+                The plugin detects the change, asks if you have saved your work in the editor,
+                and handles the rest automatically.
+            </li>
+        </ol>
+
+        <h2>Engine Path</h2>
+        <p>
+            The plugin reads the <code>EngineAssociation</code> field from your <code>.uproject</code>
+            file and constructs the default install path automatically
+            (<code>C:\Program Files\Epic Games\UE_5.x</code> on Windows,
+            <code>/Users/Shared/Epic Games/UE_5.x</code> on macOS).
+            If your engine is installed elsewhere, set the override in
+            <b>File &gt; Settings &gt; Tools &gt; UE Reflect Watch &gt; Engine Path Override</b>.
+        </p>
+
+        <h2>Settings</h2>
+        <p>All options are available under <b>File &gt; Settings &gt; Tools &gt; UE Reflect Watch</b>:</p>
+        <ul>
+            <li><b>Silent Mode</b> — suppress prompts on save; use Rebuild Now when ready</li>
+            <li><b>Auto Rebuild</b> — rebuild automatically without prompting</li>
+            <li><b>Confirm Before Rebuild</b> — ask whether you have saved your work first</li>
+            <li><b>Auto Relaunch Editor</b> — relaunch the editor after a successful build</li>
+            <li><b>Kill Editor Grace Period</b> — milliseconds to wait after closing the editor before building</li>
+            <li><b>Engine Path Override</b> — override the default engine install path</li>
+        </ul>
+
+        <p>
+            Source code and issue tracker: <a href="https://github.com/Exoduz85/UEReflectWatch">github.com/Exoduz85/UEReflectWatch</a>
+        </p>
+
+        <p><i>Currently in beta. Use at your own risk.</i></p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.rider</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <!-- Persistent settings -->
+        <applicationService
+            serviceInterface="com.ueReflectWatch.settings.UEReflectWatchSettings"
+            serviceImplementation="com.ueReflectWatch.settings.UEReflectWatchSettings"/>
+
+        <!-- Settings UI page -->
+        <applicationConfigurable
+            parentId="tools"
+            instance="com.ueReflectWatch.settings.UEReflectWatchConfigurable"
+            id="com.ueReflectWatch.settings"
+            displayName="UE Reflect Watch"/>
+
+        <!-- File save listener registered as a project service -->
+        <projectService
+            serviceImplementation="com.ueReflectWatch.FileSaveListener"/>
+
+        <!-- Tool window showing build log output -->
+        <toolWindow
+            id="UE Reflect Watch"
+            anchor="bottom"
+            factoryClass="com.ueReflectWatch.toolwindow.UEReflectWatchToolWindowFactory"
+            icon="/icons/ueReflectWatch.svg"
+            canCloseContents="false"/>
+
+    </extensions>
+
+    <actions>
+
+        <!-- Toolbar -->
+        <group id="UEReflectWatch.ToolbarGroup"
+               text="UE Reflect Watch"
+               description="UE Reflect Watch toolbar actions">
+            <add-to-group group-id="NavBarToolBar" anchor="last"/>
+            <add-to-group group-id="MainToolbarRight" anchor="last"/>
+
+            <action id="UEReflectWatch.Toolbar.RebuildNow"
+                    class="com.ueReflectWatch.actions.RebuildNowAction"
+                    text="UE: Rebuild Now"
+                    icon="/icons/rebuild.svg"
+                    description="Close the Unreal Editor, rebuild the project, and relaunch the editor"/>
+
+            <action id="UEReflectWatch.Toolbar.ToggleSilentMode"
+                    class="com.ueReflectWatch.actions.ToggleSilentModeAction"
+                    text="UE: Silent OFF"
+                    icon="/icons/silentModeOff.svg"
+                    description="Toggle silent mode"/>
+        </group>
+
+        <!-- Tools menu -->
+        <group id="UEReflectWatch.MenuGroup"
+               text="UE Reflect Watch"
+               description="UE Reflect Watch commands"
+               popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+
+            <action id="UEReflectWatch.RebuildNow"
+                    class="com.ueReflectWatch.actions.RebuildNowAction"
+                    text="Rebuild Now"
+                    description="Close the Unreal Editor, rebuild the project, and relaunch the editor"/>
+
+            <action id="UEReflectWatch.ToggleSilentMode"
+                    class="com.ueReflectWatch.actions.ToggleSilentModeAction"
+                    text="Silent Mode: OFF"
+                    description="Toggle silent mode. When ON, macro changes are logged but no prompt appears on save."/>
+
+            <action id="UEReflectWatch.InitialScan"
+                    class="com.ueReflectWatch.actions.InitialScanAction"
+                    text="Initial Project Scan"
+                    description="Scan all header files and build a macro baseline. Run this once after installing on an existing project."/>
+
+            <action id="UEReflectWatch.ClearLog"
+                    class="com.ueReflectWatch.actions.ClearLogAction"
+                    text="Clear Log"
+                    description="Clear the UE Reflect Watch output log."/>
+        </group>
+
+    </actions>
+
+</idea-plugin>
